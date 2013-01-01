@@ -8,8 +8,9 @@
 
 #import "CalculatorViewController.h"
 #import "CalculatorBrain.h"
+#import "GraphView.h"
 
-@interface CalculatorViewController ()
+@interface CalculatorViewController () <GraphViewDataSource>
 @property (nonatomic) BOOL userIsInTheMiddleOfEnteringANumber;
 @property (nonatomic, strong) CalculatorBrain *brain;
 @property (strong, nonatomic) NSDictionary *testVariableValues;
@@ -138,15 +139,11 @@
 
     NSString *testName = [sender currentTitle];
     if ([testName isEqualToString:@"Test 1"]) {
-        self.testVariableValues = [NSDictionary dictionaryWithObjectsAndKeys:
-                          [NSNumber numberWithDouble:3], @"x",
-                          [NSNumber numberWithDouble:4], @"y",
-                          nil];
+        self.testVariableValues = @{@"x": @3.0,
+                                    @"y": @4.0};
     } else if ([testName isEqualToString:@"Test 2"]) {
-        self.testVariableValues = [NSDictionary dictionaryWithObjectsAndKeys:
-                          [NSNumber numberWithDouble:10], @"x",
-                          [NSNumber numberWithDouble:100], @"y",
-                          nil];
+        self.testVariableValues = @{@"x": @10.0,
+                                    @"y": @100.0};
     } else if ([testName isEqualToString:@"Test 3"]) {
         self.testVariableValues = nil;
     }
@@ -159,7 +156,8 @@
 
 - (void)updateDisplay {
     // Run the program with parameters if needed
-    double result = [CalculatorBrain runProgram:self.brain.program usingVariableValues:self.testVariableValues];
+    double result = [CalculatorBrain runProgram:self.brain.program
+                            usingVariableValues:self.testVariableValues];
     // Update main display with the result of the program
     self.display.text = [NSString stringWithFormat:@"%g", result];
     // Update the program display
@@ -183,6 +181,31 @@
     }
     self.variableDisplay.text = [displayText componentsJoinedByString:@" "];
 }
+
+/////////////////////////////////////////////
+// Prepare the Segue to the Graph View Controller
+//
+- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"ShowGraph"]) {
+        [segue.destinationViewController setDelegate:self];
+    }
+}
+
+/////////////////////////////////////////////
+// Protocol for the GraphView
+//
+
+- (double) computeYAxisValueFor:(double)XAxisValue
+{
+    // Set the x variable value
+    self.testVariableValues = @{@"x": [NSNumber numberWithDouble:XAxisValue]};
+    
+    // Run the program with the variable new value
+    return [CalculatorBrain runProgram:self.brain.program
+                   usingVariableValues:self.testVariableValues];
+}
+
 
 // Test programs
 

@@ -9,32 +9,28 @@
 #import "GraphViewController.h"
 #import "GraphView.h"
 
-@interface GraphViewController ()
+@interface GraphViewController () <GraphViewDataSource>
+@property (nonatomic, weak) IBOutlet id <GraphViewDataSource> delegate;
 @property (weak, nonatomic) IBOutlet GraphView *graphView;
-
 @end
 
 @implementation GraphViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+@synthesize delegate = _delegate;
+@synthesize graphView = _graphView;
+
+- (double)computeYAxisValueFor:(double)XAxisValue
 {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
+    return [self.delegate computeYAxisValueFor:XAxisValue];
 }
 
-- (void)viewDidLoad
+- (void) setGraphView:(GraphView *)graphView
 {
-    [super viewDidLoad];
-	// Do any additional setup after loading the view.
+    _graphView = graphView;
+    self.graphView.dataSource = self;
+    
+    // TODO: put the gesture recognizers here
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
 
 @end
