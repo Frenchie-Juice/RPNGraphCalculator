@@ -128,7 +128,7 @@
     
     [self.brain pushVariable:[sender currentTitle]];
     [self updateProgramDisplay];
-    [self updateVariableDisplay];
+    //[self updateVariableDisplay];
 }
 
 - (IBAction)testButtonsPressed:(UIButton *)sender {
@@ -163,23 +163,29 @@
     // Update the program display
     [self updateProgramDisplay];
     // Update the variables display
-    [self updateVariableDisplay];
+    //[self updateVariableDisplay];
 }
 
 - (void)updateProgramDisplay {
     self.programDisplay.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
 }
 
-- (void)updateVariableDisplay {
-    NSSet *variablesUsed = [CalculatorBrain variablesUsedInProgram:self.brain.program];
-    NSMutableArray *displayText;
-    for (NSString *variableKey in variablesUsed) {
-        if (displayText == nil) {
-            displayText = [[NSMutableArray alloc] initWithCapacity:variablesUsed.count];
-        }
-        [displayText addObject: [NSString stringWithFormat:@"%@=%g", variableKey, [[self.testVariableValues valueForKey:variableKey] doubleValue]]];
-    }
-    self.variableDisplay.text = [displayText componentsJoinedByString:@" "];
+//- (void)updateVariableDisplay {
+//    NSSet *variablesUsed = [CalculatorBrain variablesUsedInProgram:self.brain.program];
+//    NSMutableArray *displayText;
+//    for (NSString *variableKey in variablesUsed) {
+//        if (displayText == nil) {
+//            displayText = [[NSMutableArray alloc] initWithCapacity:variablesUsed.count];
+//        }
+//        [displayText addObject: [NSString stringWithFormat:@"%@=%g", variableKey, [[self.testVariableValues valueForKey:variableKey] doubleValue]]];
+//    }
+//    self.variableDisplay.text = [displayText componentsJoinedByString:@" "];
+//}
+
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+    return NO; // No rotation when in calculator mode
 }
 
 /////////////////////////////////////////////
@@ -189,6 +195,7 @@
 {
     if ([segue.identifier isEqualToString:@"ShowGraph"]) {
         [segue.destinationViewController setDelegate:self];
+        [segue.destinationViewController setTitle:self.programDisplay.text];
     }
 }
 
