@@ -9,8 +9,9 @@
 #import "CalculatorViewController.h"
 #import "CalculatorBrain.h"
 #import "GraphView.h"
+#import "GraphViewController.h"
 
-@interface CalculatorViewController () <GraphViewDataSource>
+@interface CalculatorViewController ()
 @property (nonatomic) BOOL userIsInTheMiddleOfEnteringANumber;
 @property (nonatomic, strong) CalculatorBrain *brain;
 @property (strong, nonatomic) NSDictionary *testVariableValues;
@@ -131,6 +132,27 @@
     //[self updateVariableDisplay];
 }
 
+- (GraphViewController *)splitViewGraphViewController
+{
+    id gvc = [self.splitViewController.viewControllers lastObject];
+    if (![gvc isKindOfClass:[GraphViewController class]]) {
+        gvc = nil;
+    }
+    return gvc;
+}
+- (IBAction)graphPressed {
+    GraphViewController *gvc = [self splitViewGraphViewController];
+    if (gvc) {
+        [gvc setTitle:self.programDisplay.text];
+        [gvc setProgram:self.brain.program];
+    }
+    else {
+        // Call the segue
+        [self performSegueWithIdentifier:@"ShowGraph" sender:self];
+    }
+}
+
+
 - (IBAction)testButtonsPressed:(UIButton *)sender {
     if (self.userIsInTheMiddleOfEnteringANumber) {
         [self enterPressed];
@@ -194,23 +216,9 @@
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([segue.identifier isEqualToString:@"ShowGraph"]) {
-        [segue.destinationViewController setDelegate:self];
         [segue.destinationViewController setTitle:self.programDisplay.text];
+        [segue.destinationViewController setProgram:self.brain.program];
     }
-}
-
-/////////////////////////////////////////////
-// Protocol for the GraphView
-//
-
-- (double) computeYAxisValueFor:(double)XAxisValue
-{
-    // Set the x variable value
-    self.testVariableValues = @{@"x": [NSNumber numberWithDouble:XAxisValue]};
-    
-    // Run the program with the variable new value
-    return [CalculatorBrain runProgram:self.brain.program
-                   usingVariableValues:self.testVariableValues];
 }
 
 

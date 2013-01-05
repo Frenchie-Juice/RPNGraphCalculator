@@ -453,7 +453,7 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <segue destination="4jX-lr-296" kind="push" identifier="ShowGraph" id="Yha-rC-CDB"/>
+                                    <action selector="graphPressed" destination="2" eventType="touchUpInside" id="CMe-Cl-iU4"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="7nY-8X-dQV">
@@ -634,6 +634,7 @@
                         <outlet property="display" destination="DG8-Fq-s5D" id="1DW-Fz-Eh9"/>
                         <outlet property="programDisplay" destination="KTX-lx-1cq" id="Q1E-yG-oh8"/>
                         <outlet property="resultDisplay" destination="dgs-Eo-HgO" id="LdL-2p-r22"/>
+                        <segue destination="4jX-lr-296" kind="push" identifier="ShowGraph" id="Wa4-jg-FT4"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
@@ -698,6 +699,7 @@
             <relationships>
                 <relationship kind="outlet" name="delegate"/>
                 <relationship kind="outlet" name="graphView" candidateClass="GraphView"/>
+                <relationship kind="outlet" name="toolbar" candidateClass="UIToolbar"/>
             </relationships>
         </class>
         <class className="NSLayoutConstraint" superclassName="NSObject">
