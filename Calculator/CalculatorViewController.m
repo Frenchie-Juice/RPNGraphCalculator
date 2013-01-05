@@ -143,7 +143,7 @@
 - (IBAction)graphPressed {
     GraphViewController *gvc = [self splitViewGraphViewController];
     if (gvc) {
-        [gvc setTitle:self.programDisplay.text];
+        //[gvc setTitle:self.programDisplay.text];
         [gvc setProgram:self.brain.program];
     }
     else {
@@ -152,7 +152,7 @@
     }
 }
 
-
+// Removed Test buttons
 - (IBAction)testButtonsPressed:(UIButton *)sender {
     if (self.userIsInTheMiddleOfEnteringANumber) {
         [self enterPressed];
@@ -207,7 +207,7 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 {
-    return NO; // No rotation when in calculator mode
+    return YES;
 }
 
 /////////////////////////////////////////////
@@ -216,7 +216,7 @@
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([segue.identifier isEqualToString:@"ShowGraph"]) {
-        [segue.destinationViewController setTitle:self.programDisplay.text];
+        //[segue.destinationViewController setTitle:self.programDisplay.text];
         [segue.destinationViewController setProgram:self.brain.program];
     }
 }

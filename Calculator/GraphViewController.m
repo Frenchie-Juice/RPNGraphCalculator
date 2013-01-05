@@ -102,6 +102,10 @@
 {
     _program = program;
     
+    // Show the program in the title bar
+    self.title = [NSString stringWithFormat:@"y = %@",
+                  [CalculatorBrain descriptionOfProgram:self.program]];
+    
     // Refresh the display when the program is changed
     [self refreshGraphView];
 }
