@@ -16,7 +16,11 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                             </view>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MKs-mF-PoF">
-                                <items/>
+                                <items>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="YT0-r6-bBg"/>
+                                    <barButtonItem title="Graph" style="plain" id="7jp-F3-Ru7"/>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="urf-pT-keP"/>
+                                </items>
                             </toolbar>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -33,6 +37,7 @@
                     <toolbarItems/>
                     <connections>
                         <outlet property="graphView" destination="3a4-lw-F64" id="PFi-Qe-VDO"/>
+                        <outlet property="titleButton" destination="7jp-F3-Ru7" id="oOa-b3-b5T"/>
                         <outlet property="toolbar" destination="MKs-mF-PoF" id="pkX-dr-K6v"/>
                     </connections>
                 </viewController>
@@ -711,6 +716,12 @@
         <class className="CalculatorViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/CalculatorViewController.h"/>
             <relationships>
+                <relationship kind="action" name="clearPressed:" candidateClass="UIButton"/>
+                <relationship kind="action" name="digitPressed:" candidateClass="UIButton"/>
+                <relationship kind="action" name="operationPressed:" candidateClass="UIButton"/>
+                <relationship kind="action" name="plusMinusPressed:" candidateClass="UIButton"/>
+                <relationship kind="action" name="testButtonsPressed:" candidateClass="UIButton"/>
+                <relationship kind="action" name="variablePressed:" candidateClass="UIButton"/>
                 <relationship kind="outlet" name="display" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="programDisplay" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="resultDisplay" candidateClass="UILabel"/>
@@ -727,6 +738,7 @@
             <source key="sourceIdentifier" type="project" relativePath="./Classes/GraphViewController.h"/>
             <relationships>
                 <relationship kind="outlet" name="graphView" candidateClass="GraphView"/>
+                <relationship kind="outlet" name="titleButton" candidateClass="UIBarButtonItem"/>
                 <relationship kind="outlet" name="toolbar" candidateClass="UIToolbar"/>
             </relationships>
         </class>

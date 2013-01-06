@@ -14,7 +14,7 @@
 @interface CalculatorViewController ()
 @property (nonatomic) BOOL userIsInTheMiddleOfEnteringANumber;
 @property (nonatomic, strong) CalculatorBrain *brain;
-@property (strong, nonatomic) NSDictionary *testVariableValues;
+@property (strong, nonatomic) NSDictionary *variableValues;
 
 @end
 
@@ -23,11 +23,10 @@
 @synthesize display = _display;
 @synthesize programDisplay = _programDisplay;
 @synthesize resultDisplay = _resultDisplay;
-@synthesize variableDisplay = _variableDisplay;
 
 @synthesize userIsInTheMiddleOfEnteringANumber = _userIsInTheMiddleOfEnteringANumber;
 @synthesize brain = _brain;
-@synthesize testVariableValues = _testVariableValues;
+@synthesize variableValues = _variableValues;
 
 - (CalculatorBrain *)brain
 {
@@ -104,6 +103,9 @@
     [self.brain clearAllOperations];
     [self updateDisplay];
     
+    // Clear the variables array
+    self.variableValues = nil;
+    
     // Hide the "=" sign
     self.resultDisplay.text = @"";
     
@@ -140,6 +142,7 @@
     }
     return gvc;
 }
+
 - (IBAction)graphPressed {
     GraphViewController *gvc = [self splitViewGraphViewController];
     if (gvc) {
@@ -153,24 +156,31 @@
 }
 
 // Removed Test buttons
-- (IBAction)testButtonsPressed:(UIButton *)sender {
-    if (self.userIsInTheMiddleOfEnteringANumber) {
-        [self enterPressed];
-        self.userIsInTheMiddleOfEnteringANumber = NO;
-    }
+//- (IBAction)testButtonsPressed:(UIButton *)sender {
+//    if (self.userIsInTheMiddleOfEnteringANumber) {
+//        [self enterPressed];
+//        self.userIsInTheMiddleOfEnteringANumber = NO;
+//    }
+//
+//    NSString *testName = [sender currentTitle];
+//    if ([testName isEqualToString:@"Test 1"]) {
+//        self.testVariableValues = @{@"x": @3.0,
+//                                    @"y": @4.0};
+//    } else if ([testName isEqualToString:@"Test 2"]) {
+//        self.testVariableValues = @{@"x": @10.0,
+//                                    @"y": @100.0};
+//    } else if ([testName isEqualToString:@"Test 3"]) {
+//        self.testVariableValues = nil;
+//    }
+//    [self updateDisplay];
+//}
 
-    NSString *testName = [sender currentTitle];
-    if ([testName isEqualToString:@"Test 1"]) {
-        self.testVariableValues = @{@"x": @3.0,
-                                    @"y": @4.0};
-    } else if ([testName isEqualToString:@"Test 2"]) {
-        self.testVariableValues = @{@"x": @10.0,
-                                    @"y": @100.0};
-    } else if ([testName isEqualToString:@"Test 3"]) {
-        self.testVariableValues = nil;
-    }
-    [self updateDisplay];
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Define a proper size for the popover view
+    self.contentSizeForViewInPopover = CGSizeMake(320.0, 420.0);
 }
+
 
 /////////////////////////////////////////////
 // Display Refresh
@@ -179,7 +189,7 @@
 - (void)updateDisplay {
     // Run the program with parameters if needed
     double result = [CalculatorBrain runProgram:self.brain.program
-                            usingVariableValues:self.testVariableValues];
+                            usingVariableValues:self.variableValues];
     // Update main display with the result of the program
     self.display.text = [NSString stringWithFormat:@"%g", result];
     // Update the program display
@@ -205,10 +215,15 @@
 //}
 
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
-{
-    return YES;
+- (NSUInteger)supportedInterfaceOrientations{
+    return UIInterfaceOrientationMaskPortrait;
 }
+
+// deprecated
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+//{
+//    return NO;
+//}
 
 /////////////////////////////////////////////
 // Prepare the Segue to the Graph View Controller

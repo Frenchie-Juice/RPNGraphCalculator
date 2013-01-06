@@ -10,6 +10,9 @@
 
 @protocol GraphViewDataSource
 - (double)computeYAxisValueFor:(double)XAxisValue;
+- (void) reloadUserPreferences;
+- (void) saveUserPreferencesScale:(float)aScale;
+- (void) saveUserPreferencesOriginX:(float)xOrigin andOriginY:(float)yOrigin;
 @end
 
 @interface GraphView : UIView

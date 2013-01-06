@@ -12,14 +12,18 @@
 @interface GraphViewController () <GraphViewDataSource>
 @property (weak, nonatomic) IBOutlet GraphView *graphView;
 @property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
-@property (nonatomic, strong) UIBarButtonItem *splitViewBarButtonItem;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *titleButton;
+@property (strong, nonatomic) UIBarButtonItem *splitViewBarButtonItem;
+@property (strong, nonatomic) UIPopoverController *popoverController;
 @end
 
 @implementation GraphViewController
 
 @synthesize graphView = _graphView;
 @synthesize toolbar = _toolbar;
+@synthesize titleButton = _titleButton;
 @synthesize splitViewBarButtonItem = _splitViewBarButtonItem;
+@synthesize popoverController = popoverController;
 @synthesize program = _program;
 
 - (void)awakeFromNib
@@ -36,9 +40,15 @@
 {
     NSMutableArray *toolbarItems = [self.toolbar.items mutableCopy];
     if (_splitViewBarButtonItem) [toolbarItems removeObject:_splitViewBarButtonItem];
-    if (splitViewBarButtonItem) [toolbarItems insertObject:splitViewBarButtonItem atIndex:0];
+    if (splitViewBarButtonItem) {
+        splitViewBarButtonItem.target = self;
+        splitViewBarButtonItem.action = @selector(barButtonPressed);
+        
+        [toolbarItems insertObject:splitViewBarButtonItem atIndex:0];
+    }
     self.toolbar.items = toolbarItems;
     _splitViewBarButtonItem = splitViewBarButtonItem;
+
 }
 
 - (void)setSplitViewBarButtonItem:(UIBarButtonItem *)splitViewBarButtonItem
@@ -54,7 +64,21 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self handleSplitViewBarButtonItem:self.splitViewBarButtonItem];
+    //[self handleSplitViewBarButtonItem:self.splitViewBarButtonItem];
+    
+    // Instantiate the UIPopoverController
+    // but only if we are in an iPad
+    if (self.splitViewController) {
+        popoverController = [[UIPopoverController alloc] initWithContentViewController:
+                             [self.splitViewController.viewControllers objectAtIndex:0]];
+    }
+}
+
+- (void)barButtonPressed
+{
+    [self.popoverController presentPopoverFromBarButtonItem:self.splitViewBarButtonItem
+                                   permittedArrowDirections:UIPopoverArrowDirectionAny
+                                                   animated:NO];
 }
 
 ///////////////////////////////////////////////
@@ -65,7 +89,7 @@
    shouldHideViewController:(UIViewController *)vc
               inOrientation:(UIInterfaceOrientation)orientation
 {
-    return UIInterfaceOrientationIsPortrait(orientation);
+    return YES; //UIInterfaceOrientationIsPortrait(orientation);
 }
 
 - (void)splitViewController:(UISplitViewController *)svc
@@ -88,34 +112,67 @@
 }
 
 ///////////////////////////////////////////////
-// GraphViewDataSource protocol and
-// graph refresh management
+// GraphViewDataSource protocol
 //
-
 - (double)computeYAxisValueFor:(double)xAxisValue
 {
     return [CalculatorBrain runProgram:self.program
-            usingVariableValues:[NSDictionary dictionaryWithObject:[NSNumber numberWithDouble:xAxisValue] forKey:@"x"]];
+                   usingVariableValues:[NSDictionary dictionaryWithObject:[NSNumber numberWithDouble:xAxisValue] forKey:@"x"]];
 }
 
-- (void)setProgram:(id)program
+- (void) reloadUserPreferences
 {
-    _program = program;
+    NSString *currentProgram = [CalculatorBrain descriptionOfProgram:self.program];
     
-    // Show the program in the title bar
-    self.title = [NSString stringWithFormat:@"y = %@",
-                  [CalculatorBrain descriptionOfProgram:self.program]];
+    // Retrieve the scale property if saved
+    float prefScale = [[NSUserDefaults standardUserDefaults] floatForKey:[@"scale." stringByAppendingString:currentProgram]];
     
-    // Refresh the display when the program is changed
-    [self refreshGraphView];
+    // Retrieve the origin X and Y values
+    float prefOrigX = [[NSUserDefaults standardUserDefaults] floatForKey:[@"x." stringByAppendingString:currentProgram]];
+    float prefOrigY = [[NSUserDefaults standardUserDefaults] floatForKey:[@"y." stringByAppendingString:currentProgram]];
+    
+    // Assign the prefered scale if it was saved
+    if (prefScale) self.graphView.scale = prefScale;
+    
+    // Assign the prefered origin point if it was saved
+    if (prefOrigX && prefOrigY) {
+        CGPoint prefOrigin;
+        
+        prefOrigin.x = prefOrigX;
+        prefOrigin.y = prefOrigY;
+        
+        self.graphView.origin = prefOrigin;
+    }
 }
 
-- (void)refreshGraphView
+- (void) saveUserPreferencesScale:(float)aScale
 {
-    // Refresh the Graph View
-    [self.graphView setNeedsDisplay];
+    // Save the scale in the user defaults
+    [[NSUserDefaults standardUserDefaults] setFloat:aScale
+                                             forKey:[@"scale." stringByAppendingString:
+                                                     [CalculatorBrain descriptionOfProgram:self.program]]];
+    // Force refresh of the user defaults
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
+- (void) saveUserPreferencesOriginX:(float)xOrigin andOriginY:(float)yOrigin
+{
+    NSString *currentProgram = [CalculatorBrain descriptionOfProgram:self.program];
+    
+    // Save the X origin in the user defaults
+    [[NSUserDefaults standardUserDefaults] setFloat:xOrigin
+                                             forKey:[@"x." stringByAppendingString:currentProgram]];
+    // Save the Y origin in the user defaults
+    [[NSUserDefaults standardUserDefaults] setFloat:yOrigin
+                                             forKey:[@"y." stringByAppendingString:currentProgram]];
+    // Force refresh of the user defaults
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+
+///////////////////////////////////////////////
+// GraphView refresh
+//
 - (void) setGraphView:(GraphView *)graphView
 {
     _graphView = graphView;
@@ -134,7 +191,41 @@
                                             action:@selector(tripleTap:)];
     tapGestureRecognizer.numberOfTapsRequired = 3;
     [self.graphView addGestureRecognizer:tapGestureRecognizer];
+    
+    // Reload user preferences since on iPhone, it hasn't been loaded yet
+    [self reloadUserPreferences];
 }
+
+- (void)setProgram:(id)program
+{
+    _program = program;
+    
+    // Refresh the display when the program is changed
+    [self refreshGraphView];
+}
+
+- (void)refreshGraphView
+{
+    // Print the program where it's visible
+    if (self.splitViewController) {
+        // In an iPad, show the program in the button inside the toolbar
+        self.titleButton.title = [NSString stringWithFormat:@"y = %@",
+                                  [CalculatorBrain descriptionOfProgram:self.program]];
+    }
+    else {
+        // in an iPhone, show the program in the ViewControler title bar
+        self.title = [NSString stringWithFormat:@"y = %@",
+                      [CalculatorBrain descriptionOfProgram:self.program]];
+    }
+    
+    // Reload user preferences
+    [self reloadUserPreferences];
+    
+    // Refresh the Graph View
+    [self.graphView setNeedsDisplay];
+}
+
+
 
 
 @end

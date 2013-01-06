@@ -8,8 +8,6 @@
 
 #import "CalculatorBrain.h"
 
-const double PI = 3.14159;
-
 @interface CalculatorBrain()
 @property (nonatomic, strong) NSMutableArray *programStack;
 @end
@@ -107,7 +105,7 @@ static NSSet *variables;
             if(divisor) result = [self popOperandOffStack:stack] / divisor;
         }
         else if ([operation isEqualToString:@"π"]){
-            result = PI;
+            result = M_PI;
         }
         else if ([operation isEqualToString:@"sin"]){
             result = sin([self popOperandOffStack:stack]);

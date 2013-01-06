@@ -22,10 +22,10 @@
             </objects>
             <point key="canvasLocation" x="956" y="75"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Rotatable Navigation View Controller-->
         <scene sceneID="7Os-an-88W">
             <objects>
-                <navigationController id="Uzl-zF-sKh" sceneMemberID="viewController">
+                <navigationController id="Uzl-zF-sKh" customClass="RotatableNavigationViewController" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="ahH-aF-9aQ">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -672,10 +672,14 @@
         <class className="CalculatorViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/CalculatorViewController.h"/>
             <relationships>
+                <relationship kind="action" name="clearPressed:" candidateClass="UIButton"/>
+                <relationship kind="action" name="digitPressed:" candidateClass="UIButton"/>
+                <relationship kind="action" name="operationPressed:" candidateClass="UIButton"/>
+                <relationship kind="action" name="plusMinusPressed:" candidateClass="UIButton"/>
+                <relationship kind="action" name="variablePressed:" candidateClass="UIButton"/>
                 <relationship kind="outlet" name="display" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="programDisplay" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="resultDisplay" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="variableDisplay" candidateClass="UILabel"/>
             </relationships>
         </class>
         <class className="GraphView" superclassName="UIView">
@@ -688,11 +692,15 @@
             <source key="sourceIdentifier" type="project" relativePath="./Classes/GraphViewController.h"/>
             <relationships>
                 <relationship kind="outlet" name="graphView" candidateClass="GraphView"/>
+                <relationship kind="outlet" name="titleButton" candidateClass="UIBarButtonItem"/>
                 <relationship kind="outlet" name="toolbar" candidateClass="UIToolbar"/>
             </relationships>
         </class>
         <class className="NSLayoutConstraint" superclassName="NSObject">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/NSLayoutConstraint.h"/>
+        </class>
+        <class className="RotatableNavigationViewController" superclassName="UINavigationController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/RotatableNavigationViewController.h"/>
         </class>
     </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

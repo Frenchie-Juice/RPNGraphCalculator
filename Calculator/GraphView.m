@@ -36,8 +36,8 @@
     
     _scale = scale;
     
-    // Ask the delegate to store the scale
-    //[self.dataSource storeScale:_scale ForGraphView:self];
+    // Ask the delegate to save the scale
+    [self.dataSource saveUserPreferencesScale:self.scale];
     
     // Redraw whenever the scale is changed
     [self setNeedsDisplay];
@@ -50,10 +50,9 @@
     
     _origin = origin;
     
-    // Ask the delegate to store the scale
-//    [self.dataSource storeAxisOriginX:_axisOrigin.x
-//                       andAxisOriginY:_axisOrigin.y
-//                         ForGraphView:self];
+    // Ask the delegate to save the origin
+    [self.dataSource saveUserPreferencesOriginX:self.origin.x
+                                     andOriginY:self.origin.y];
     
     // Redraw whenever the axis origin is changed
     [self setNeedsDisplay];
@@ -129,7 +128,7 @@
 
 
 ////////////////////////////////////
-// Drawing
+// Drawing and helpers
 //
 - (void)drawRect:(CGRect)rect
 {
