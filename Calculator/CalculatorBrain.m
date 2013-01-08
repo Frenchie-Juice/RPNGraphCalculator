@@ -73,9 +73,9 @@ static NSSet *variables;
     noOperandOperations = [NSSet setWithObjects:@"π",@"e", nil];
     singleOperandOperations = [NSSet setWithObjects:@"sin",@"cos",@"log",@"√",@"+/-", nil];
     twoOperandOperations = [NSSet setWithObjects:@"+",@"-",@"*",@"÷", nil];
-    variables = [NSSet setWithObjects:@"x", nil];
+    //variables = [NSSet setWithObjects:@"x", nil];
     // previous version had 2 variables
-    //variables = [NSSet setWithObjects:@"x",@"y", nil];
+    variables = [NSSet setWithObjects:@"x",@"y", nil];
 }
 
 + (double)popOperandOffStack:(NSMutableArray *)stack

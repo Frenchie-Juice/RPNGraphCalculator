@@ -14,7 +14,7 @@
 @interface CalculatorViewController ()
 @property (nonatomic) BOOL userIsInTheMiddleOfEnteringANumber;
 @property (nonatomic, strong) CalculatorBrain *brain;
-@property (strong, nonatomic) NSDictionary *variableValues;
+@property (strong, nonatomic) NSMutableDictionary *variableValues;
 
 @end
 
@@ -23,6 +23,8 @@
 @synthesize display = _display;
 @synthesize programDisplay = _programDisplay;
 @synthesize resultDisplay = _resultDisplay;
+@synthesize xVariableDisplay = _xVariableDisplay;
+@synthesize yVariableDisplay = _yVariableDisplay;
 
 @synthesize userIsInTheMiddleOfEnteringANumber = _userIsInTheMiddleOfEnteringANumber;
 @synthesize brain = _brain;
@@ -60,13 +62,10 @@
     else {
         self.display.text = digit;
         self.userIsInTheMiddleOfEnteringANumber = YES;
+        
+        // Hides the "=" sign
+        self.resultDisplay.text = @"";
     }
-    
-//    self.historyDisplay.text = [self.historyDisplay.text stringByAppendingString:digit];
-    
-    // Hides the "=" sign
-    self.resultDisplay.text = @"";
-
 }
 
 - (IBAction)enterPressed
@@ -82,8 +81,6 @@
     if (self.userIsInTheMiddleOfEnteringANumber) [self enterPressed];
     [self.brain pushOperation:sender.currentTitle];
     [self updateDisplay];
-    // Shows the "=" sign after an operation
-    self.resultDisplay.text = @"=";
 }
 
 - (IBAction)plusMinusPressed:(UIButton *)sender
@@ -101,13 +98,12 @@
 - (IBAction)clearPressed:(UIButton *)sender {
     // Clear the brain
     [self.brain clearAllOperations];
-    [self updateDisplay];
-    
+
     // Clear the variables array
     self.variableValues = nil;
     
-    // Hide the "=" sign
-    self.resultDisplay.text = @"";
+    // Refresh the display
+    [self updateDisplay];
     
     self.userIsInTheMiddleOfEnteringANumber = NO;
 }
@@ -134,6 +130,31 @@
     //[self updateVariableDisplay];
 }
 
+- (IBAction)setVariableValuePressed:(UIButton *)sender
+{
+    // Lazy instanciate the variable values if
+    // none are entered so far
+    if(!self.variableValues){
+        self.variableValues = [@{@"x": @0.0,
+                                 @"y": @0.0} mutableCopy];
+    }
+    
+    // Check which variable was set
+    NSString *pressedVar = [[sender currentTitle] substringToIndex:1];
+    
+    // Get the variable value from screen
+    double varValue = [self.display.text doubleValue];
+    
+    // Replace the variable value inside the Dictionary
+    self.variableValues[pressedVar] = [NSNumber numberWithDouble:varValue];
+    
+    // Make sure next digit resets the display
+    self.userIsInTheMiddleOfEnteringANumber = NO;
+    
+    // Update the display
+    [self updateDisplay];
+}
+
 - (GraphViewController *)splitViewGraphViewController
 {
     id gvc = [self.splitViewController.viewControllers lastObject];
@@ -155,26 +176,6 @@
     }
 }
 
-// Removed Test buttons
-//- (IBAction)testButtonsPressed:(UIButton *)sender {
-//    if (self.userIsInTheMiddleOfEnteringANumber) {
-//        [self enterPressed];
-//        self.userIsInTheMiddleOfEnteringANumber = NO;
-//    }
-//
-//    NSString *testName = [sender currentTitle];
-//    if ([testName isEqualToString:@"Test 1"]) {
-//        self.testVariableValues = @{@"x": @3.0,
-//                                    @"y": @4.0};
-//    } else if ([testName isEqualToString:@"Test 2"]) {
-//        self.testVariableValues = @{@"x": @10.0,
-//                                    @"y": @100.0};
-//    } else if ([testName isEqualToString:@"Test 3"]) {
-//        self.testVariableValues = nil;
-//    }
-//    [self updateDisplay];
-//}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Define a proper size for the popover view
@@ -194,25 +195,36 @@
     self.display.text = [NSString stringWithFormat:@"%g", result];
     // Update the program display
     [self updateProgramDisplay];
+    
+    // Update the "=" sign after the calculation is done
+    if (result) {
+        self.resultDisplay.text = @"=";
+    } else {
+        self.resultDisplay.text = @"";
+    }
+    
     // Update the variables display
-    //[self updateVariableDisplay];
+    [self updateVariablesDisplay];
+    
 }
 
 - (void)updateProgramDisplay {
     self.programDisplay.text = [CalculatorBrain descriptionOfProgram:self.brain.program];
 }
 
-//- (void)updateVariableDisplay {
-//    NSSet *variablesUsed = [CalculatorBrain variablesUsedInProgram:self.brain.program];
-//    NSMutableArray *displayText;
-//    for (NSString *variableKey in variablesUsed) {
-//        if (displayText == nil) {
-//            displayText = [[NSMutableArray alloc] initWithCapacity:variablesUsed.count];
-//        }
-//        [displayText addObject: [NSString stringWithFormat:@"%@=%g", variableKey, [[self.testVariableValues valueForKey:variableKey] doubleValue]]];
-//    }
-//    self.variableDisplay.text = [displayText componentsJoinedByString:@" "];
-//}
+- (void)updateVariablesDisplay {
+    // Lazy instanciate the variable values if
+    // none are entered so far
+    if(!self.variableValues){
+        self.variableValues = [@{@"x": @0.0,
+                                 @"y": @0.0} mutableCopy];
+    }
+    
+    // Display the x variable on screen
+    self.xVariableDisplay.text = [NSString stringWithFormat:@"x= %@", self.variableValues[@"x"]];
+    // Display the y variable on screen
+    self.yVariableDisplay.text = [NSString stringWithFormat:@"y= %@", self.variableValues[@"y"]];
+}
 
 
 - (NSUInteger)supportedInterfaceOrientations{
@@ -235,40 +247,5 @@
         [segue.destinationViewController setProgram:self.brain.program];
     }
 }
-
-
-// Test programs
-
-    // Program 1
-//    [self.brain pushVariable:@"x"];
-//    [self.brain pushVariable:@"x"];
-//    [self.brain pushOperation:@"*"];
-//    [self.brain pushVariable:@"y"];
-//    [self.brain pushVariable:@"y"];
-//    [self.brain pushOperation:@"*"];
-//    [self.brain pushOperation:@"+"];
-//    [self.brain pushOperation:@"√"];
-
-    // Program 2
-//    [self.brain pushVariable:@"x"];
-//    [self.brain pushVariable:@"y"];
-//    [self.brain pushOperand:5.0];
-//    [self.brain pushOperation:@"+"];
-//    [self.brain pushOperation:@"-"];
-
-    // Program 3
-//    [self.brain pushOperand:5.0];
-//    [self.brain pushOperand:6.0];
-//    [self.brain pushOperand:9.0];
-//    [self.brain pushOperation:@"÷"];
-//    [self.brain pushOperation:@"÷"];
-
-    // Program 4
-//    [self.brain pushOperand:5.0];
-//    [self.brain pushOperand:6.0];
-//    [self.brain pushOperation:@"÷"];
-//    [self.brain pushOperand:9.0];
-//    [self.brain pushOperation:@"÷"];
-
 
 @end

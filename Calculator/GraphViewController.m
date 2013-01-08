@@ -70,7 +70,7 @@
     // but only if we are in an iPad
     if (self.splitViewController) {
         popoverController = [[UIPopoverController alloc] initWithContentViewController:
-                             [self.splitViewController.viewControllers objectAtIndex:0]];
+                             (self.splitViewController.viewControllers)[0]];
     }
 }
 
@@ -117,7 +117,7 @@
 - (double)computeYAxisValueFor:(double)xAxisValue
 {
     return [CalculatorBrain runProgram:self.program
-                   usingVariableValues:[NSDictionary dictionaryWithObject:[NSNumber numberWithDouble:xAxisValue] forKey:@"x"]];
+                   usingVariableValues:@{@"x": @(xAxisValue)}];
 }
 
 - (void) reloadUserPreferences
