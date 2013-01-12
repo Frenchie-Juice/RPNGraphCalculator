@@ -13,13 +13,39 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3a4-lw-F64" customClass="GraphView">
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tJX-TY-jno">
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                        <state key="normal" title="Add to Favorites">
+                                            <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <state key="highlighted">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="addToFavorites:" destination="WYC-Yw-59G" eventType="touchUpInside" id="BRC-5M-dni"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="tJX-TY-jno" secondAttribute="bottom" constant="20" symbolic="YES" type="default" id="APp-8O-no7"/>
+                                    <constraint firstAttribute="trailing" secondItem="tJX-TY-jno" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="d2W-qe-eDs"/>
+                                </constraints>
                             </view>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MKs-mF-PoF">
                                 <items>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="YT0-r6-bBg"/>
                                     <barButtonItem title="Graph" style="plain" id="7jp-F3-Ru7"/>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="urf-pT-keP"/>
+                                    <barButtonItem title="Favorites" id="Mua-qw-I5N">
+                                        <connections>
+                                            <segue destination="5iL-68-Sq9" kind="popover" identifier="Show Favorite Graphs" popoverAnchorBarButtonItem="Mua-qw-I5N" id="bfd-Gl-5EE">
+                                                <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                            </segue>
+                                        </connections>
+                                    </barButtonItem>
                                 </items>
                             </toolbar>
                         </subviews>
@@ -44,6 +70,43 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="acI-cU-kGh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="862" y="454"/>
+        </scene>
+        <!--Programs Table View Controller-->
+        <scene sceneID="rwc-q3-owN">
+            <objects>
+                <tableViewController id="5iL-68-Sq9" customClass="ProgramsTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="hfH-jN-WE8">
+                        <rect key="frame" x="0.0" y="20" width="768" height="1004"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Program Description" textLabel="YW4-h4-zd1" style="IBUITableViewCellStyleDefault" id="sMH-l9-rao">
+                                <rect key="frame" x="0.0" y="22" width="768" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="0.0" y="0.0" width="768" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YW4-h4-zd1">
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </label>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </view>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="5iL-68-Sq9" id="XAL-oi-Z2s"/>
+                            <outlet property="delegate" destination="5iL-68-Sq9" id="Qmk-AL-Yqd"/>
+                        </connections>
+                    </tableView>
+                    <value key="contentSizeForViewInPopover" type="size" width="200" height="200"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="LuT-dw-NdO" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1865" y="483"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="431-v5-Hnq">
@@ -784,6 +847,7 @@
         <class className="GraphViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/GraphViewController.h"/>
             <relationships>
+                <relationship kind="action" name="addToFavorites:"/>
                 <relationship kind="outlet" name="graphView" candidateClass="GraphView"/>
                 <relationship kind="outlet" name="titleButton" candidateClass="UIBarButtonItem"/>
                 <relationship kind="outlet" name="toolbar" candidateClass="UIToolbar"/>
@@ -791,6 +855,9 @@
         </class>
         <class className="NSLayoutConstraint" superclassName="NSObject">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/NSLayoutConstraint.h"/>
+        </class>
+        <class className="ProgramsTableViewController" superclassName="UITableViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/ProgramsTableViewController.h"/>
         </class>
     </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

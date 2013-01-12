@@ -8,8 +8,9 @@
 
 #import "GraphViewController.h"
 #import "CalculatorBrain.h"
+#import "ProgramsTableViewController.h"
 
-@interface GraphViewController () <GraphViewDataSource>
+@interface GraphViewController () <GraphViewDataSource, ProgramsTableViewControllerDelegate>
 @property (weak, nonatomic) IBOutlet GraphView *graphView;
 @property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *titleButton;
@@ -25,6 +26,9 @@
 @synthesize splitViewBarButtonItem = _splitViewBarButtonItem;
 @synthesize popoverController = popoverController;
 @synthesize program = _program;
+
+#define FAVORITES_KEY @"GraphViewController.Favorites"
+
 
 - (void)awakeFromNib
 {
@@ -81,10 +85,34 @@
                                                    animated:NO];
 }
 
-///////////////////////////////////////////////
-// UISplitViewControllerDelegate protocol
-//
+- (IBAction)addToFavorites:(id)sender
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSMutableArray *favorites = [[defaults objectForKey:FAVORITES_KEY] mutableCopy];
+    if(!favorites)favorites = [NSMutableArray array];
+    
+    [favorites addObject:self.program];
+    [defaults setObject:favorites forKey:FAVORITES_KEY];
+    [defaults synchronize];
+}
 
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([segue.identifier isEqualToString:@"Show Favorite Graphs"]) {
+        NSArray *programs = [[NSUserDefaults standardUserDefaults] objectForKey:FAVORITES_KEY];
+        [segue.destinationViewController setPrograms:programs];
+        [segue.destinationViewController setDelegate:self];
+    }
+}
+
+#pragma mark - ProgramsTableViewControllerDelegate
+- (void)programsTableViewController:(ProgramsTableViewController *)sender choseProgram:(id)program
+{
+    self.program = program;
+}
+
+#pragma mark - UISplitViewControllerDelegate
 - (BOOL)splitViewController:(UISplitViewController *)svc
    shouldHideViewController:(UIViewController *)vc
               inOrientation:(UIInterfaceOrientation)orientation
@@ -111,9 +139,7 @@
     self.splitViewBarButtonItem = nil;
 }
 
-///////////////////////////////////////////////
-// GraphViewDataSource protocol
-//
+#pragma mark - GraphViewDataSource
 - (double)computeYAxisValueFor:(double)xAxisValue
 {
     return [CalculatorBrain runProgram:self.program

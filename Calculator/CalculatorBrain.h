@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 
 @interface CalculatorBrain : NSObject
+
+// program is always guaranted to be a Property List
 @property (readonly) id program;
 
 - (void)pushOperand:(double)operand;
