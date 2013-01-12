@@ -15,7 +15,8 @@
 @property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *titleButton;
 @property (strong, nonatomic) UIBarButtonItem *splitViewBarButtonItem;
-@property (strong, nonatomic) UIPopoverController *popoverController;
+@property (strong, nonatomic) UIPopoverController *masterPopoverController;
+@property (strong, nonatomic) UIPopoverController *favoritesPopoverController;
 @end
 
 @implementation GraphViewController
@@ -24,7 +25,8 @@
 @synthesize toolbar = _toolbar;
 @synthesize titleButton = _titleButton;
 @synthesize splitViewBarButtonItem = _splitViewBarButtonItem;
-@synthesize popoverController = popoverController;
+@synthesize masterPopoverController = masterPopoverController;
+@synthesize favoritesPopoverController = _favoritesPopoverController;
 @synthesize program = _program;
 
 #define FAVORITES_KEY @"GraphViewController.Favorites"
@@ -73,14 +75,14 @@
     // Instantiate the UIPopoverController
     // but only if we are in an iPad
     if (self.splitViewController) {
-        popoverController = [[UIPopoverController alloc] initWithContentViewController:
+        masterPopoverController = [[UIPopoverController alloc] initWithContentViewController:
                              (self.splitViewController.viewControllers)[0]];
     }
 }
 
 - (void)barButtonPressed
 {
-    [self.popoverController presentPopoverFromBarButtonItem:self.splitViewBarButtonItem
+    [self.masterPopoverController presentPopoverFromBarButtonItem:self.splitViewBarButtonItem
                                    permittedArrowDirections:UIPopoverArrowDirectionAny
                                                    animated:NO];
 }
@@ -91,15 +93,28 @@
     NSMutableArray *favorites = [[defaults objectForKey:FAVORITES_KEY] mutableCopy];
     if(!favorites)favorites = [NSMutableArray array];
     
-    [favorites addObject:self.program];
-    [defaults setObject:favorites forKey:FAVORITES_KEY];
-    [defaults synchronize];
+    // Only add the program if it's not already in the favorites
+    if (![favorites containsObject:self.program]) {
+        [favorites addObject:self.program];
+        
+        [defaults setObject:favorites forKey:FAVORITES_KEY];
+        [defaults synchronize];
+    }
 }
 
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([segue.identifier isEqualToString:@"Show Favorite Graphs"]) {
+        // Prevent multiple popovers from appearing if the user keeps touching the Favorites button over and over
+        // simply remove the last one we put up each time we segue to a new one
+        if ([segue isKindOfClass:[UIStoryboardPopoverSegue class]]) {
+            UIStoryboardPopoverSegue *popoverSegue = (UIStoryboardPopoverSegue *)segue;
+            [self.favoritesPopoverController dismissPopoverAnimated:YES];
+            self.favoritesPopoverController = popoverSegue.popoverController; // might want to be popover's delegate and
+                                                                              // self.popoverController = nil on dismiss?
+        }
+        
         NSArray *programs = [[NSUserDefaults standardUserDefaults] objectForKey:FAVORITES_KEY];
         [segue.destinationViewController setPrograms:programs];
         [segue.destinationViewController setDelegate:self];
@@ -107,9 +122,33 @@
 }
 
 #pragma mark - ProgramsTableViewControllerDelegate
-- (void)programsTableViewController:(ProgramsTableViewController *)sender choseProgram:(id)program
+- (void)programsTableViewController:(ProgramsTableViewController *)sender
+                       choseProgram:(id)program
 {
     self.program = program;
+    
+    // In iPad mode, discard the popover
+    [self.favoritesPopoverController dismissPopoverAnimated:YES];
+    self.favoritesPopoverController = nil;
+    
+    // In iPhone mode, go back to the previous screen
+    [self.navigationController popViewControllerAnimated:YES]; 
+}
+
+- (void)programsTableViewController:(ProgramsTableViewController *)sender
+                     deletedProgram:(id)program
+{
+    NSString *deletedProgramDescription = [CalculatorBrain descriptionOfProgram:program];
+    NSMutableArray *favorites = [NSMutableArray array];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    for (id program in [defaults objectForKey:FAVORITES_KEY]) {
+        if (![[CalculatorBrain descriptionOfProgram:program] isEqualToString:deletedProgramDescription]) {
+            [favorites addObject:program];
+        }
+    }
+    [defaults setObject:favorites forKey:FAVORITES_KEY];
+    [defaults synchronize];
+    sender.programs = favorites;
 }
 
 #pragma mark - UISplitViewControllerDelegate
@@ -196,9 +235,7 @@
 }
 
 
-///////////////////////////////////////////////
-// GraphView refresh
-//
+#pragma mark - GraphView refresh
 - (void) setGraphView:(GraphView *)graphView
 {
     _graphView = graphView;

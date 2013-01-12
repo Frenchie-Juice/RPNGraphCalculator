@@ -10,10 +10,12 @@
 
 @class ProgramsTableViewController;
 
-@protocol ProgramsTableViewControllerDelegate
+@protocol ProgramsTableViewControllerDelegate <NSObject>
 @optional
 - (void)programsTableViewController:(ProgramsTableViewController *)sender
                        choseProgram:(id)program;
+- (void)programsTableViewController:(ProgramsTableViewController *)sender
+                               deletedProgram:(id)program;
 @end
 
 @interface ProgramsTableViewController : UITableViewController
