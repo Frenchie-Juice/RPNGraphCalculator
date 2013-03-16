@@ -8,10 +8,11 @@ I also implemented all the extra credits.
 <B>Here are some of the functionalities implemented: </B>
 
 - Neat looking GUI! <BR>
-- Program accepts 2 variables (x and y):<BR>
+- Program accepts 2 variables (x and y) for problem solving. <BR>
 <p align="left">
   <img src="https://raw.github.com/Frenchie-Juice/RPNGraphCalculator/gh-pages/images/calc1.png" />
 </p>
+- Graphing functions of type y=f(x)
 <p align="left">
   <img src="https://raw.github.com/Frenchie-Juice/RPNGraphCalculator/gh-pages/images/calc2.png" />
 </p>
@@ -21,4 +22,6 @@ I also implemented all the extra credits.
   <img src="https://raw.github.com/Frenchie-Juice/RPNGraphCalculator/gh-pages/images/calc3.png" />
 </p>
 
+<BR>
+<BR>
 Enjoy!
