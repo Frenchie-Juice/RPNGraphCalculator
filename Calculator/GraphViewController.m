@@ -1,6 +1,6 @@
 //
 //  GraphViewController.m
-//  GraphCalculator
+//  RPNCalculator
 //
 //  Created by Fred Gagnepain on 2012-12-29.
 //  Copyright (c) 2012 Fred Gagnepain. All rights reserved.
@@ -93,12 +93,15 @@
     NSMutableArray *favorites = [[defaults objectForKey:FAVORITES_KEY] mutableCopy];
     if(!favorites)favorites = [NSMutableArray array];
     
-    // Only add the program if it's not already in the favorites
-    if (![favorites containsObject:self.program]) {
-        [favorites addObject:self.program];
-        
-        [defaults setObject:favorites forKey:FAVORITES_KEY];
-        [defaults synchronize];
+    // Only add a program if an active program exists
+    if (self.program) {
+        // Only add the program if it's not already in the favorites
+        if (![favorites containsObject:self.program]) {
+            [favorites addObject:self.program];
+            
+            [defaults setObject:favorites forKey:FAVORITES_KEY];
+            [defaults synchronize];
+        }
     }
 }
 
